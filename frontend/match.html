@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Matches</title>
+  <style>
+    /* Reset some default styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    /* Body styling */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      justify-content: flex-start;
+      align-items: center; /* Align items horizontally in the center */
+    }
+    
+    /* Header styling */
+    header {
+      background-color: #d32f2f; /* Red */
+      color: #fff;
+      padding: 0.5rem 0; /* Adjusted padding */
+      text-align: center;
+      width: 100%;
+    }
+    
+    header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+    
+    header h1 {
+      font-size: 1.8rem;
+      flex-grow: 1;
+      text-align: left;
+      padding-left: 20px;
+    }
+    
+    nav ul {
+      list-style: none;
+      display: flex;
+    }
+    
+    nav ul li {
+      margin: 0 15px;
+    }
+    
+    nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+    
+    nav ul li a:hover {
+      color: #f5f5f5; /* Light grey */
+    }
+    
+    /* Hero section styling */
+    .hero {
+      background-color: #e0e0e0;
+      color: #333;
+      text-align: center;
+      padding: 40px 20px;
+      flex-grow: 1;
+    }
+    
+    .hero .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .hero p {
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+    }
+    
+    .cta-button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #d32f2f; /* Red */
+      color: white;
+      text-decoration: none;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    
+    .cta-button:hover {
+      background-color: #b71c1c; /* Darker red */
+    }
+    
+    /* Footer Styling */
+    footer {
+      background-color: #d32f2f; /* Red */
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      width: 100%;
+      position: absolute; /* Keeps the footer at the bottom */
+      bottom: 0;
+      left: 0;
+    }
+
+    /* Form container styling */
+    .form-container {
+      flex-direction: column;
+      background-color: #f8d7da;
+      padding: 20px;
+      border-radius: 8px;
+      border: 2px solid #ccc;
+      width: 400px;
+      margin-top: 30px;
+      display: flex; /* Make sure flex properties work */
+      align-items: center; /* Center the content horizontally */
+      justify-content: center; /* Center the content vertically */
+    }
+
+    /* Input, Select, Button styling */
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    select {
+      background-color: #f9f9f9;
+    }
+
+    button {
+      background-color: #d32f2f; /* Red */
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #b71c1c; /* Darker Red */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header section with navbar -->
+  <header>
+    <div class="container">
+      <h1>Welcome to the Matchmaking App</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="profile.html">Profile</a></li>
+          <li><a href="login.html" id="logout-link">Logout</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Form container -->
+  <div class="form-container">
+    <h1>Find Matches</h1>
+    <div id="matchesList"></div> <!-- Match list will be inserted here -->
+    <div class="error" id="errorMessage"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 YourWebsite. All rights reserved.</p>
+  </footer>
+
+  <script>
+    async function fetchMatches() {
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        window.location.href = "login.html"; // Redirect if no token
+        return;
+      }
+
+      const userId = localStorage.getItem("user_id");
+      if (!userId) {
+        const errorMessage = document.getElementById("errorMessage");
+        errorMessage.textContent = "User ID not found.";
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/users/${userId}/matches/`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Unable to fetch matches.");
+        }
+
+        const matches = await response.json();
+        const matchesList = document.getElementById("matchesList");
+
+        if (matches.length === 0) {
+          matchesList.innerHTML = "<p>No matches found.</p>";
+        } else {
+          matchesList.innerHTML = ""; // Clear any previous content
+          matches.forEach((match) => {
+            const matchElement = document.createElement("div");
+            matchElement.classList.add("match");
+            matchElement.innerHTML = `
+              <p><strong>Name:</strong> ${match.name}</p>
+              <p><strong>City:</strong> ${match.city}</p>
+              <p><strong>Interests:</strong> ${match.interests.join(", ")}</p>
+            `;
+            matchesList.appendChild(matchElement);
+          });
+        }
+      } catch (err) {
+        const errorMessage = document.getElementById("errorMessage");
+        errorMessage.textContent = err.message;
+        console.error("Error fetching matches:", err);
+      }
+    }
+
+    // Fetch matches when the page loads
+    window.onload = fetchMatches;
+
+    // Handle logout
+    document.getElementById("logout-link").addEventListener("click", function(event) {
+      event.preventDefault(); // Prevent default link action
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("user_id");
+      window.location.href = "login.html"; // Redirect to login page
+    });
+  </script>
+
+</body>
+</html>

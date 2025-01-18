@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delete Account</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background-color: #f4f4f9;
+    }
+    
+    /* Navbar Styling */
+    .navbar {
+      background-color: #fff; /* White background */
+      padding: 15px 0;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Light shadow */
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .navbar a {
+      color: #c0392b; /* Red text color */
+      text-decoration: none;
+      padding: 12px 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .navbar a:hover {
+      color: #e74c3c; /* Darker red text on hover */
+      background-color: #f4f4f4; /* Light background on hover */
+    }
+
+    /* Main Content */
+    .container {
+      width: 100%;
+      max-width: 400px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      margin: 20px auto;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      background: #d9534f;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #c9302c;
+    }
+
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+
+    .success {
+      color: green;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <a href="home.html">Home</a>
+    <a href="profile.html">Profile</a>
+    <a href="logout.html">Logout</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <h1>Delete Account</h1>
+    <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+    <button id="deleteButton">Delete Account</button>
+    <div class="error" id="errorMessage"></div>
+    <div class="success" id="successMessage"></div>
+  </div>
+
+  <script>
+    document.getElementById("deleteButton").addEventListener("click", async () => {
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        window.location.href = "login.html"; // Redirect if no token found
+        return;
+      }
+
+      const userConfirmation = confirm("Are you sure you want to delete your account? This action cannot be undone.");
+      if (!userConfirmation) {
+        return; // If user cancels, do nothing
+      }
+
+      try {
+        // Fetching the user's ID
+        const userResponse = await fetch("http://127.0.0.1:8000/users/me", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!userResponse.ok) {
+          throw new Error("Unable to fetch user data.");
+        }
+
+        const userData = await userResponse.json();
+        const userId = userData.id;
+
+        // Send DELETE request to remove user account
+        const deleteResponse = await fetch(`http://127.0.0.1:8000/users/${userId}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!deleteResponse.ok) {
+          const errorData = await deleteResponse.json();
+          throw new Error(errorData.detail || "Failed to delete the account. Please try again.");
+        }
+
+        // Show success message and redirect to login page after successful deletion
+        document.getElementById("successMessage").textContent = "Your account has been deleted successfully.";
+        setTimeout(() => {
+          localStorage.removeItem("access_token"); // Clear token
+          window.location.href = "login.html"; // Redirect to login page
+        }, 2000);
+
+      } catch (err) {
+        document.getElementById("errorMessage").textContent = err.message;
+        console.error("Error during account deletion:", err);
+      }
+    });
+  </script>
+</body>
+</html>

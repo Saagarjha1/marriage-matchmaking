@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <style>
+  /* Reset some default styles */
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+  }
+
+  /* Body styling */
+  body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      justify-content: flex-start;
+      align-items: center; /* Align items horizontally in the center */
+  }
+
+  /* Header styling */
+  header {
+      background-color: #d32f2f; /* Red */
+      color: #fff;
+      padding: 0.5rem 0; /* Adjusted padding */
+      text-align: center;
+      width: 100%;
+  }
+
+  header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+  }
+
+  header h1 {
+      font-size: 1.8rem;
+      flex-grow: 1;
+      text-align: left;
+      padding-left: 20px;
+  }
+
+  nav ul {
+      list-style: none;
+      display: flex;
+  }
+
+  nav ul li {
+      margin: 0 15px;
+  }
+
+  nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+  }
+
+  nav ul li a:hover {
+      color: #f5f5f5; /* Light grey */
+  }
+
+  /* Hero section styling */
+  .hero {
+      background-color: #e0e0e0;
+      color: #333;
+      text-align: center;
+      padding: 40px 20px;
+      flex-grow: 1;
+  }
+
+  .hero .container {
+      max-width: 800px;
+      margin: 0 auto;
+  }
+
+  .hero p {
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+  }
+
+  .cta-button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #d32f2f; /* Red */
+      color: white;
+      text-decoration: none;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+  }
+
+  .cta-button:hover {
+      background-color: #b71c1c; /* Darker red */
+  }
+
+  /* Footer Styling */
+  footer {
+      background-color: #d32f2f; /* Red */
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      width: 100%;
+      position: relative;
+      bottom: 0;
+  }
+
+  /* Form container styling */
+  .form-container {
+      flex-direction: column;
+      background-color: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      border: 2px solid #ccc;
+      width: 400px;
+      margin-top: 30px;
+      display: flex; /* Make sure flex properties work */
+      align-items: center; /* Center the content horizontally */
+      justify-content: center; /* Center the content vertically */
+  }
+
+  /* Input, Select, Button styling */
+  input, select, button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  select {
+    background-color: #f9f9f9;
+  }
+
+  button {
+    background-color: #d32f2f; /* Red */
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #b71c1c; /* Darker Red */
+  }
+  </style>
+</head>
+<body>
+
+
+  <!-- Header section with navbar -->
+  <header>
+    <div class="container">
+      <h1>Welcome to the Matchmaking App</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+        
+          <li><a href="login.html">Login</a></li>
+          <li><a href="javascript:void(0);" onclick="checkLogin()">Find Matches</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Form container -->
+  <div class="form-container">
+    <h1>Register</h1>
+    <form id="registerForm">
+      <input type="text" id="registerName" placeholder="Name" required /><br>
+      <input type="email" id="registerEmail" placeholder="Email" required /><br>
+      <input type="password" id="registerPassword" placeholder="Password" required /><br>
+      <input type="number" id="registerAge" placeholder="Age" required /><br>
+      <input type="text" id="registerCity" placeholder="City" required /><br>
+      <input type="text" id="registerInterests" placeholder="Interests (comma separated)" required /><br>
+      <select id="registerGender" required>
+        <option value="" disabled selected>Select Gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+      <button type="submit">Register</button>
+    </form>
+    <div class="error" id="errorMessage"></div>
+  </div>
+
+  <!-- Footer section -->
+  <footer>
+    <p>&copy; 2025 Matchmaking App. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function checkLogin() {
+      // Check if the user is logged in before redirecting to find matches
+      const isLoggedIn = localStorage.getItem("isLoggedIn"); // Assuming login status is stored in localStorage
+  
+      if (isLoggedIn) {
+        window.location.href = "find-matches.html"; // Redirect to matches page
+      } else {
+        alert("Please log in first.");
+        window.location.href = "login.html"; // Redirect to login page
+      }
+    }
+  
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+  
+      const name = document.getElementById("registerName").value;
+      const email = document.getElementById("registerEmail").value;
+      const password = document.getElementById("registerPassword").value;
+      const age = document.getElementById("registerAge").value;
+      const city = document.getElementById("registerCity").value;
+      const interests = document.getElementById("registerInterests").value.split(',').map(interest => interest.trim());
+      const gender = document.getElementById("registerGender").value;
+  
+      // Replace with your backend API URL
+      const apiUrl = "http://127.0.0.1:8000";  // Update to the backend URL
+  
+      try {
+        const response = await fetch(`${apiUrl}/register/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name, email, password, age, city, interests, gender
+          }),
+        });
+  
+        if (!response.ok) {
+          throw new Error("Registration failed! Please try again.");
+        }
+  
+        const data = await response.json();
+        alert("Registration successful!");
+        window.location.href = "login.html";  // Redirect to login page after successful registration
+      } catch (err) {
+        const errorMessage = document.getElementById("errorMessage");
+        errorMessage.textContent = err.message;
+        console.error("Error during registration:", err);
+      }
+    });
+  </script>
+  
+</body>
+</html>

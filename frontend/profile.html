@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile</title>
+  <style>
+    /* Reset some default styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Body styling */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      justify-content: flex-start;
+      align-items: center; /* Align items horizontally in the center */
+    }
+
+    /* Header styling */
+    header {
+      background-color: #d32f2f; /* Red */
+      color: #fff;
+      padding: 0.5rem 0; /* Adjusted padding */
+      text-align: center;
+      width: 100%;
+    }
+
+    header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      flex-grow: 1;
+      text-align: left;
+      padding-left: 20px;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+    }
+
+    nav ul li {
+      margin: 0 15px;
+    }
+
+    nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+
+    nav ul li a:hover {
+      color: #f5f5f5; /* Light grey */
+    }
+
+    /* Hero section styling */
+    .hero {
+      background-color: #e0e0e0;
+      color: #333;
+      text-align: center;
+      padding: 40px 20px;
+      flex-grow: 1;
+    }
+
+    .hero .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero p {
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #d32f2f; /* Red */
+      color: white;
+      text-decoration: none;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    .cta-button:hover {
+      background-color: #b71c1c; /* Darker red */
+    }
+
+    /* Footer Styling */
+    footer {
+      background-color: #d32f2f; /* Red */
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      width: 100%;
+      position: absolute; /* Keeps the footer at the bottom */
+      bottom: 0;
+      left: 0;
+    }
+
+    /* Form container styling */
+    .form-container {
+      flex-direction: column;
+      background-color: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      border: 2px solid #ccc;
+      width: 400px;
+      margin-top: 30px;
+      display: flex; /* Make sure flex properties work */
+      align-items: center; /* Center the content horizontally */
+      justify-content: center; /* Center the content vertically */
+    }
+
+    /* Input, Select, Button styling */
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    select {
+      background-color: #f9f9f9;
+    }
+
+    button {
+      background-color: #4CAF50; /* Green */
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #b71c1c; /* Darker Red */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header section with navbar -->
+  <header>
+    <div class="container">
+      <h1>Welcome to the Matchmaking App</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li> <!-- Home link -->
+          <li><a href="login.html" id="logoutLink">Logout</a></li> <!-- Logout link -->
+          <li><a href="match.html" id="find-matches-nav">Find Match</a></li> <!-- Find Match link -->
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Form container -->
+  <div class="form-container">
+    <h1>Profile</h1>
+    <div class="profile-info">
+      <p><strong>Name:</strong> <span id="name"></span></p>
+      <p><strong>Age:</strong> <span id="age"></span></p>
+      <p><strong>Gender:</strong> <span id="gender"></span></p>
+      <p><strong>Email:</strong> <span id="email"></span></p>
+      <p><strong>City:</strong> <span id="city"></span></p>
+      <p><strong>Interests:</strong> <span id="interests"></span></p>
+    </div>
+    <button id="updateButton">Update Profile</button>
+    <button id="deleteButton" class="delete-button">Delete Account</button>
+    <button id="findMatchesButton">Find Matches</button> <!-- Added Match Button -->
+    <div class="error" id="errorMessage"></div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 YourCompany. All rights reserved.</p>
+  </footer>
+
+  <script>
+    async function fetchUserData() {
+      const apiUrl = "http://127.0.0.1:8000/users/me";
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        window.location.href = "login.html"; // Redirect if no token
+        return;
+      }
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Unable to fetch user data.");
+        }
+
+        const data = await response.json();
+
+        // Store user id in localStorage
+        localStorage.setItem("user_id", data.id);
+
+        // Display user data in profile
+        document.getElementById("name").textContent = data.name;
+        document.getElementById("age").textContent = data.age;
+        document.getElementById("gender").textContent = data.gender;
+        document.getElementById("email").textContent = data.email;
+        document.getElementById("city").textContent = data.city;
+        document.getElementById("interests").textContent = data.interests.join(", ");
+      } catch (err) {
+        const errorMessage = document.getElementById("errorMessage");
+        errorMessage.textContent = err.message;
+        console.error("Error fetching user data:", err);
+      }
+    }
+
+    // Redirect to update page on button click
+    document.getElementById("updateButton").addEventListener("click", () => {
+      window.location.href = "update.html";
+    });
+
+    // Handle delete account functionality
+    document.getElementById("deleteButton").addEventListener("click", async () => {
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        window.location.href = "login.html"; // Redirect if no token
+        return;
+      }
+
+      const userConfirmation = confirm("Are you sure you want to delete your account? This action cannot be undone.");
+      if (!userConfirmation) {
+        return; // If user cancels, do nothing
+      }
+
+      try {
+        // Fetch user data to get user ID
+        const userResponse = await fetch("http://127.0.0.1:8000/users/me", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!userResponse.ok) {
+          throw new Error("Unable to fetch user data.");
+        }
+
+        const userData = await userResponse.json();
+        const userId = userData.id;
+
+        // Send DELETE request to remove user account
+        const deleteResponse = await fetch(`http://127.0.0.1:8000/users/${userId}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!deleteResponse.ok) {
+          const errorData = await deleteResponse.json();
+          throw new Error(errorData.detail || "Failed to delete the account. Please try again.");
+        }
+
+        // On success, remove token and redirect to login page
+        localStorage.removeItem("access_token");
+        window.location.href = "login.html"; // Redirect to login page
+      } catch (err) {
+        const errorMessage = document.getElementById("errorMessage");
+        errorMessage.textContent = err.message;
+        console.error("Error during account deletion:", err);
+      }
+    });
+
+    // Redirect to match page on button click
+    document.getElementById("findMatchesButton").addEventListener("click", () => {
+      window.location.href = "match.html"; // Redirect to match.html
+    });
+
+    // Logout functionality
+    document.getElementById("logoutLink").addEventListener("click", () => {
+      localStorage.removeItem("access_token"); // Remove the token from local storage
+      window.location.href = "login.html"; // Redirect to the login page
+    });
+
+    // Fetch user data when the page loads
+    window.onload = fetchUserData;
+  </script>
+</body>
+</html>
