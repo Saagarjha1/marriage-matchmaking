@@ -1,0 +1,150 @@
+//How to Run he program
+ python -m uvicorn main:app --reload
+Complete Postman Setup for All Endpoints
+Here is the complete step-by-step Postman guide for all the endpoints, including fetching all users:
+
+1. User Registration (/register/)
+Method: POST
+URL: http://127.0.0.1:8000/register/
+Body:
+json
+Copy
+Edit
+{
+  "name": "John Doe",
+  "age": 30,
+  "gender": "Male",
+  "email": "johndoe@example.com",
+  "city": "New York",
+  "interests": ["reading", "coding"],
+  "password": "securepassword123"
+}
+2. User Login (/login/)
+Method: POST
+URL: http://127.0.0.1:8000/login/
+Body:
+json
+Copy
+Edit
+{
+  "email": "johndoe@example.com",
+  "password": "securepassword123"
+}
+Response:
+json
+Copy
+Edit
+{
+  "access_token": "<your_access_token>",
+  "token_type": "bearer"
+}
+3. Fetch User's Own Details (/users/me)
+Method: GET
+URL: http://127.0.0.1:8000/users/me
+Headers:
+Key: Authorization
+Value: Bearer <access_token>
+Response:
+json
+Copy
+Edit
+{
+  "id": 1,
+  "name": "John Doe",
+  "age": 30,
+  "gender": "Male",
+  "email": "johndoe@example.com",
+  "city": "New York",
+  "interests": ["reading", "coding"]
+}
+4. Find Matches for a User (/users/{user_id}/matches/)
+Method: GET
+URL: http://127.0.0.1:8000/users/{user_id}/matches/
+Headers:
+Key: Authorization
+Value: Bearer <access_token>
+Response (if matches are found):
+json
+Copy
+Edit
+[
+  {
+    "id": 2,
+    "name": "Jane Smith",
+    "age": 28,
+    "gender": "Female",
+    "email": "janesmith@example.com",
+    "city": "New York",
+    "interests": ["traveling", "reading"]
+  },
+  {
+    "id": 3,
+    "name": "Alice Johnson",
+    "age": 25,
+    "gender": "Female",
+    "email": "alicej@example.com",
+    "city": "New York",
+    "interests": ["gaming", "coding"]
+  }
+]
+5. Delete User (/users/{user_id}/delete/)
+Method: DELETE
+URL: http://127.0.0.1:8000/users/{user_id}/delete/
+Headers:
+Key: Authorization
+Value: Bearer <access_token>
+Response (if user is deleted):
+json
+Copy
+Edit
+{
+  "message": "User 1 deleted successfully"
+}
+6. Fetch All Users (/users/)
+Method: GET
+URL: http://127.0.0.1:8000/users/
+Headers:
+Key: Authorization
+Value: Bearer <access_token>
+Response (if users are present):
+json
+Copy
+Edit
+[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "age": 30,
+    "gender": "Male",
+    "email": "johndoe@example.com",
+    "city": "New York",
+    "interests": ["reading", "coding"]
+  },
+  {
+    "id": 2,
+    "name": "Jane Smith",
+    "age": 28,
+    "gender": "Female",
+    "email": "janesmith@example.com",
+    "city": "New York",
+    "interests": ["traveling", "reading"]
+  },
+  {
+    "id": 3,
+    "name": "Alice Johnson",
+    "age": 25,
+    "gender": "Female",
+    "email": "alicej@example.com",
+    "city": "San Francisco",
+    "interests": ["gaming", "coding"]
+  }
+]
+Summary
+Now you have all the necessary steps to test each of the endpoints in Postman:
+
+Register User
+Login User
+Fetch User's Own Details
+Find Matches for a User
+Delete User
+Fetch All Users
